@@ -1,26 +1,41 @@
 import melee
 import pickle
 
-# Returns port of targeted character
-def has_character(console: melee.Console, character: melee.Character) -> int:
+'''
+Returns port of specific character and -1 if not found
+Skip checking for specific port
+'''
+def has_character(
+                    console: melee.Console,
+                    character: melee.Character,
+                    skip: int=-1
+) -> int:
+
     gamestate = console.step()
     if gamestate is None:
         return False
     for i in range(1,3):
-        if character == gamestate.players[i].character:
+        if character == gamestate.players[i].character and i != skip:
             return i
     return -1
 
-def player_data(gamestate):
-    player = gamestate.players[1].controller_state
-    return
+def convert_dataset(
+                    agent: melee.Character=melee.Character.CPTFALCON,
+                    adversary: melee.Character=melee.Character.FOX,
+                    match: bool=True
+) -> None:
 
-def convert_dataset(character: melee.Character=melee.Character.CPTFALCON) -> None:
-
-    console = melee.Console(is_dolphin=False, path="/Users/bchan/Slippi/Game_20220722T142744.slp")
+    console = melee.Console(is_dolphin=False, path="/Users/bchan/Slippi/Game_20220727T191324.slp")
     console.connect()
 
-    
+    if match is True:
+        agent_port = has_character(console, agent)
+        adversary_port = has_character(console, adversary, agent_port)
+        if agent_port == -1 or adversary_port == -1:
+            print('ERROR character not found in slp file')
+            return
+
+    f = open('data.pkl', 'w')
 
     data = []
     while True:
@@ -30,11 +45,10 @@ def convert_dataset(character: melee.Character=melee.Character.CPTFALCON) -> Non
             break
         frame = {}
         # Each frame has character data and controller data
-        # Character data is location, velocity, hitstun
-
-        p1 = player_data(gamestate)
-        print(gamestate.players[2].character == character)
         break
+
+    pickle.dump(data, f)
+    f.close()
 
 '''
 count = 0

@@ -26,7 +26,7 @@ Copies ingame character data and returns as list
 May need to restructure how data is saved
 '''
 def gamedata(player: melee.GameState.players) -> list:
-    position = player.position
+    position = (player.position.x, player.position.y)
     velocity = [
         player.speed_air_x_self,
         player.speed_ground_x_self,
@@ -47,7 +47,7 @@ def convert_dataset(
                     match: bool=True
 ) -> None:
 
-    console = melee.Console(is_dolphin=False, path="/Users/bchan/Slippi/Game_20220727T191324.slp")
+    console = melee.Console(is_dolphin=False, path="/home/jovyan/20gx-ai/Game_20220727T191324.slp")
     console.connect()
 
     if match is True:

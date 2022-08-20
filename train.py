@@ -1,12 +1,19 @@
 import os
 import argparse
-
+import pickle
 
 def config(path: str):
     # if path == slp load data and return
     # if path == directory load all data and return
     # if neither throw error
-    assert os.path.isdir(path)
+    if os.path.isfile(path):
+        assert(path[len(path)-4:] == '.slp')
+        with open(path) as f:
+            data = pickle.load(path)
+    elif os.path.isdir(path):
+        pass
+    else:
+        raise Exception('Illegal file or path')
     return None
 
 parser = argparse.ArgumentParser()

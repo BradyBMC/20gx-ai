@@ -1,5 +1,6 @@
 import melee
 import pickle
+import numpy as np
 
 '''
 Returns port of specific character and -1 if not found
@@ -26,7 +27,15 @@ Copies ingame character data and returns as list
 May need to restructure how data is saved
 '''
 def gamedata(player: melee.GameState.players) -> list:
+    '''
+    position = (
+                np.array(player.position.x, dtype=float),
+                np.array(player.position.y, dtype=float)
+               )
+    '''
     position = (player.position.x, player.position.y)
+    return position
+    '''
     velocity = [
         player.speed_air_x_self,
         player.speed_ground_x_self,
@@ -35,6 +44,7 @@ def gamedata(player: melee.GameState.players) -> list:
         player.speed_y_self
     ]
     return [position, velocity, player.facing]
+    '''
 
 #----------------------------------------------------------------------------
 
@@ -67,24 +77,36 @@ def convert_dataset(
             break
 
         # Each frame has game data and controller data
-        frame = {}
+        #frame = {}
+        frame = []
 
         # Visible game data for 1 frame
         agent_data = gamedata(gamestate.players[agent_port])
         adversary_data = gamedata(gamestate.players[adversary_port])
-        frame['Gamedata'] = [agent_data, adversary_data]
+        frame.append(agent_data)
+        frame.append(adversary_data)
+        # frame['Gamedata'] = [agent_data, adversary_data]
 
         # All controller data for 1 frame
         controller = gamestate.players[agent_port].controller_state
+        
+        count = 0
         pressed = []
         for button in controller.button:
+            count += 1
             if controller.button[button] is True:
-                pressed.append(button)
-        control_stick = (round(controller.main_stick[0], 2), round(controller.main_stick[1], 2))
-        c_stick = (round(controller.c_stick[0], 2), round(controller.c_stick[1], 2))
-        inputs = [control_stick, c_stick, pressed]
-        frame['Controller'] = inputs
+                pressed.append(float(1))
+            else:
+                pressed.append(float(0))
+            if count == 6:
+                break
         # Missing L/R half press for light shield. Dpad missing bc Luigi and Samus = Cringe
+
+        control_stick = [float(round(controller.main_stick[0], 2)), float(round(controller.main_stick[1], 2))]
+        c_stick = [float(round(controller.c_stick[0], 2)), float(round(controller.c_stick[1], 2))]
+        inputs = [control_stick, c_stick, pressed]
+        # frame['Controller'] = inputs
+        frame.append(inputs)
 
         data.append(frame)
 

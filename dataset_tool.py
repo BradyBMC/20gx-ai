@@ -54,10 +54,15 @@ Process game data and controller inputs from slp -> pkl
 def convert_dataset(
                     agent: melee.Character=melee.Character.CPTFALCON,
                     adversary: melee.Character=melee.Character.FOX,
-                    match: bool=True
+                    match: bool=True,
+                    # Change this to None later only for test
+                    train_dir: str=None,
+                    p_path: str=None
 ) -> None:
 
-    console = melee.Console(is_dolphin=False, path="/home/jovyan/20gx-ai/Game_20220727T191324.slp")
+    assert train_dir is not None
+    
+    console = melee.Console(is_dolphin=False, path=train_dir)
     console.connect()
 
     if match is True:

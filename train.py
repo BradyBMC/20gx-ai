@@ -1,32 +1,48 @@
 import os
 import argparse
 import pickle
+import dataset_tool
+
+
+
+#----------------------------------------------------------------------------
 
 def config(path: str):
-    # if path == slp load data and return
-    # if path == directory load all data and return
-    # if neither throw error
-    if os.path.isfile(path):
-        assert(path[len(path)-4:] == '.slp')
-        with open(path) as f:
-            data = pickle.load(path)
-    elif os.path.isdir(path):
-        pass
+    if os.path.isdir(path):
+        directory = os.fsencode(path)
+        for file in os.listdir(directory):
+            filename = path + '/' + os.fsdecode(file)
+            assert filename.endswith('.slp'), 'Contains non .slp files: ' + filename
+            print(filename)
+            dataset_tool.convert_dataset(train_dir=filename)
     else:
-        raise Exception('Illegal file or path')
+        raise Exception('Illegal path')
     return None
+
+
+
+
+
+#----------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-data', '--data', help='Training data', type=str)
-parser.add_argument('-s', '--size', help='Size', type=int)
+parser.add_argument('-data', help='Training data directory name', type=str)
+parser.add_argument('-dest', help='Pickle directory name', type=str)
 
 args = parser.parse_args()
 
 config(args.data)
 
+
+
+
+
+
+#----------------------------------------------------------------------------
+
 def main():
-    print(args.size)
+    print('Hello World')
     
 if __name__ == '__main__':
     main()

@@ -2,6 +2,12 @@ import melee
 import pickle
 import numpy as np
 
+
+
+
+
+#----------------------------------------------------------------------------
+
 '''
 Returns port of specific character and -1 if not found
 Skip checking for specific port
@@ -55,14 +61,15 @@ def convert_dataset(
                     agent: melee.Character=melee.Character.CPTFALCON,
                     adversary: melee.Character=melee.Character.FOX,
                     match: bool=True,
-                    # Change this to None later only for test
-                    train_dir: str=None,
-                    p_path: str=None
+                    train_path: str=None,
+                    pkl_path: str=None,
+                    count: int=None
 ) -> None:
 
-    assert train_dir is not None
+    assert train_path is not None
+    assert pkl_path is not None
     
-    console = melee.Console(is_dolphin=False, path=train_dir)
+    console = melee.Console(is_dolphin=False, path=train_path)
     console.connect()
 
     if match is True:
@@ -72,7 +79,8 @@ def convert_dataset(
             print('ERROR character not found in slp file')
             return
 
-    f = open('data.pkl', 'wb')
+    # Need to change how name will be generated
+    f = open(pkl_path + '/data' + str(count) + '.pkl', 'wb')
 
     data = []
     while True:

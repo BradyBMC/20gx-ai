@@ -3,6 +3,7 @@ import argparse
 import pickle
 import dataset_tool
 from threading import Thread, Lock
+from multiprocessing import Process
 
 #----------------------------------------------------------------------------
 
@@ -30,44 +31,61 @@ def multi_config(
     path: str,
     pkl_path: str
 ):
-
-    def get_file(files):
+    global COUNT
+    COUNT = 0
+    
+    def get_file():
         return next(files, None)
-
-    def start_thread(mutex):
+    
+    def gf(i):
+        if i == 0:
+            return next(f1, None)
+        else:
+            return next(f2, None)
+    
+    def start_thread(x):
         while True:
-            mutex.aquire()
-            file = get_file()
-            mutex.release()
+            global COUNT
+            file = gf(x)
+            # mutex.acquire()
+            # file = get_file()
+            # mutex.release()
             if file is None:
                 break
             # May cause an issue with the adding
-            res = dataset_tool.convert_datset(train_path=file, pkl_path=pkl_path, count = i)
-            i += res
+            res = dataset_tool.convert_dataset(train_path=file, pkl_path=pkl_path, count = COUNT)
+            COUNT = COUNT + res
 
     assert os.path.isdir(path), 'Illegal path'
     assert os.path.isdir(pkl_path), 'Illegal pkl save destination'
 
     directory = os.fsencode(path)
     files = os.listdir(directory)
-    for i in range(len(files)):
-        files[i] = path + '/' + os.fsdecode(files[i])
-        assert files[i].endswith('.slp'), 'Training set contains non .slp file' + files[i]
+    for j in range(len(files)):
+        files[j] = path + '/' + os.fsdecode(files[j])
+        assert files[j].endswith('.slp'), 'Training set contains non .slp file' + files[j]
 
+    f1 = files[:int(len(files)/2)]
+    f2 = files[int(len(files)/2):]
+    f1 = iter(f1)
+    f2 = iter(f2)
+        
     files = iter(files)
     mutex = Lock()
     threads = []
-    i = 0
 
-    for i in range(os.cpu_count()):
-        t = Thread(target=start_thread, args=(mutex))
+    # for k in range(os.cpu_count()):
+    for x in range(2):
+        # t = Thread(target=start_thread)
+        t = Process(target=start_thread,args=0)
+        t = Process(target=start_thread,args=1)
         threads.append(t)
         t.start()
+        break
 
     for t in threads:
         t.join()
-    
-    
+
 #----------------------------------------------------------------------------
 
 
@@ -78,7 +96,7 @@ parser.add_argument('-dest', help='Pickle directory name', type=str)
 
 args = parser.parse_args()
 
-multi_config(args.data, args.dest)
+config(args.data, args.dest)
 
 #----------------------------------------------------------------------------
 

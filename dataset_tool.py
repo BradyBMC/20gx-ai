@@ -4,8 +4,6 @@ import numpy as np
 
 
 
-
-
 #----------------------------------------------------------------------------
 
 '''
@@ -39,7 +37,7 @@ def gamedata(player: melee.GameState.players) -> list:
                 np.array(player.position.y, dtype=float)
                )
     '''
-    position = (player.position.x, player.position.y)
+    position = [player.position.x, player.position.y]
     return position
     '''
     velocity = [
@@ -56,18 +54,19 @@ def gamedata(player: melee.GameState.players) -> list:
 
 '''
 Process game data and controller inputs from slp -> pkl
+Returns 0 if it DOESN'T work and 1 if it does
 '''
 def convert_dataset(
                     agent: melee.Character=melee.Character.CPTFALCON,
                     adversary: melee.Character=melee.Character.FOX,
                     match: bool=True,
-                    train_path: str=None,
+                    train_path: str='Game_20220727T191324.slp',
                     pkl_path: str=None,
                     count: int=None
 ) -> None:
 
-    assert train_path is not None
-    assert pkl_path is not None
+    # assert train_path is not None
+    # assert pkl_path is not None
     
     console = melee.Console(is_dolphin=False, path=train_path)
     console.connect()
@@ -77,10 +76,11 @@ def convert_dataset(
         adversary_port = has_character(console, adversary, agent_port)
         if agent_port == -1 or adversary_port == -1:
             print('ERROR character not found in slp file')
-            return
+            return 0
 
     # Need to change how name will be generated
-    f = open(pkl_path + '/data' + str(count) + '.pkl', 'wb')
+    # f = open(pkl_path + '/data' + str(count) + '.pkl', 'wb')
+    f = open('data.pkl', 'wb')
 
     data = []
     while True:
@@ -96,8 +96,12 @@ def convert_dataset(
         # Visible game data for 1 frame
         agent_data = gamedata(gamestate.players[agent_port])
         adversary_data = gamedata(gamestate.players[adversary_port])
-        frame.append(agent_data)
-        frame.append(adversary_data)
+        # frame.append(agent_data)
+        # frame.append(adversary_data)
+        frame.append([agent_data[0], agent_data[1],
+                      adversary_data[0], adversary_data[1]])
+        
+        
         # frame['Gamedata'] = [agent_data, adversary_data]
 
         # All controller data for 1 frame
@@ -117,7 +121,9 @@ def convert_dataset(
 
         control_stick = [float(round(controller.main_stick[0], 2)), float(round(controller.main_stick[1], 2))]
         c_stick = [float(round(controller.c_stick[0], 2)), float(round(controller.c_stick[1], 2))]
-        inputs = [control_stick, c_stick, pressed]
+        # inputs = [control_stick, c_stick, pressed]
+        inputs = control_stick + c_stick + pressed
+
         # frame['Controller'] = inputs
         frame.append(inputs)
 
@@ -125,6 +131,8 @@ def convert_dataset(
 
     pickle.dump(data, f)
     f.close()
+    
+    return 1
 
 #----------------------------------------------------------------------------
 

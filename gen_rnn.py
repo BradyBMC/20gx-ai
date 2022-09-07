@@ -43,7 +43,9 @@ timestep = 48
 
 x0, x1, x2, x3, y = split_data(data, timestep)
 
-# Sigmoid function equivalent to make range 0 to 1
+'''
+Data normalization: transforms features of differing ranges to universal range
+Needed to allow quicker convergence of gradient descent
 '''
 scaler = MinMaxScaler(feature_range=(0,1))
 x0 = scaler.fit_transform(x0)
@@ -51,25 +53,23 @@ x1 = scaler.fit_transform(x1)
 x2 = scaler.fit_transform(x2)
 x3 = scaler.fit_transform(x3)
 y = scaler.fit_transform(y)
-'''
 
-# stacks the training data to have [x0, x1, x2, x3] as 1 timestep
-# 48 timesteps are 1 training sample
+# Stacks a list of features consisting of 48 timesteps as 1 sample
 x = np.stack([x0, x1, x2, x3], axis=2)
 
 model = Sequential()
+
 '''
 model.add(LSTM(50, activation='relu', input_shape=(x.shape[1], x.shape[2])))
 model.add(Dense(10))
 model.compile(optimizer='adam', loss='mse')
 model.fit(x, y, epochs=200, verbose=0)
 '''
+
 model.add(LSTM(50, return_sequences=True, activation='relu', input_shape=(x.shape[1], x.shape[2])))
 model.add(LSTM(50, return_sequences=False, activation='relu'))
 model.add(Dense(50, activation='relu'))
 model.add(Dense(10))
-
-
 
 filepath = 'models/{epoch:02d}-{loss:.4f}-{val_loss:.4f}-{mae:.4f}-{val_mae:.4f}.hdf5'
 callbacks = [EarlyStopping(monitor='val_loss', patience=20),
@@ -77,7 +77,10 @@ callbacks = [EarlyStopping(monitor='val_loss', patience=20),
 
 optimizers.SGD(momentum=0.9)
 
-
 model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-# model.fit(x, y, epochs=200, verbose=0)
+'''
+validation_split: .2 of the training data taken as validation
+batch_size: number of training samples to work through before updating model
+epoch: number of complete passes through training set (ends early if cross validation is not improving)
+'''
 model.fit(x, y, validation_split=0.2, epochs=200, callbacks=callbacks, batch_size=16)

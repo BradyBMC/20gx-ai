@@ -2,8 +2,6 @@ import melee
 import pickle
 import numpy as np
 
-
-
 #----------------------------------------------------------------------------
 
 '''
@@ -60,7 +58,7 @@ def convert_dataset(
                     agent: melee.Character=melee.Character.CPTFALCON,
                     adversary: melee.Character=melee.Character.FOX,
                     match: bool=True,
-                    train_path: str='Game_20220727T191324.slp',
+                    train_path: str='Game_20220803T133857.slp',
                     pkl_path: str=None,
                     count: int=None
 ) -> None:
@@ -79,8 +77,8 @@ def convert_dataset(
             return 0
 
     # Need to change how name will be generated
-    # f = open(pkl_path + '/data' + str(count) + '.pkl', 'wb')
-    f = open('data.pkl', 'wb')
+    f = open(pkl_path + '/data' + str(count) + '.pkl', 'wb')
+    # f = open('data.pkl', 'wb')
 
     data = []
     while True:

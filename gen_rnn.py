@@ -10,6 +10,7 @@ from tensorflow.keras import optimizers
 from tensorflow.keras.layers import Dense, LSTM
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.models import load_model
 
 def split_data(data, timestep):
     # contains the x,y coord for both players
@@ -57,19 +58,23 @@ y = scaler.fit_transform(y)
 # Stacks a list of features consisting of 48 timesteps as 1 sample
 x = np.stack([x0, x1, x2, x3], axis=2)
 
-model = Sequential()
-
 '''
+LEGACY CODE
 model.add(LSTM(50, activation='relu', input_shape=(x.shape[1], x.shape[2])))
 model.add(Dense(10))
 model.compile(optimizer='adam', loss='mse')
 model.fit(x, y, epochs=200, verbose=0)
 '''
 
+'''
+model = Sequential()
 model.add(LSTM(50, return_sequences=True, activation='relu', input_shape=(x.shape[1], x.shape[2])))
 model.add(LSTM(50, return_sequences=False, activation='relu'))
 model.add(Dense(50, activation='relu'))
 model.add(Dense(10))
+'''
+
+model = load_model('models/54-0.0000-0.0000-0.0000-0.0001.hdf5')
 
 filepath = 'models/{epoch:02d}-{loss:.4f}-{val_loss:.4f}-{mae:.4f}-{val_mae:.4f}.hdf5'
 callbacks = [EarlyStopping(monitor='val_loss', patience=20),

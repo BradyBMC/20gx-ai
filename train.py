@@ -88,7 +88,6 @@ def multi_config(
 
 #----------------------------------------------------------------------------
 
-
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-data', help='Training data directory name', type=str)

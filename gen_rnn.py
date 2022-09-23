@@ -46,6 +46,8 @@ x0, x1, x2, x3, y = split_data(data, timestep)
 '''
 Data normalization: transforms features of differing ranges to universal range
 Needed to allow quicker convergence of gradient descent
+x0 is p1_x
+x1 is p1_y
 '''
 scaler = MinMaxScaler(feature_range=(0,1))
 x0 = scaler.fit_transform(x0)

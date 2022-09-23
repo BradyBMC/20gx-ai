@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 
-model = load_model('40-0.0000-0.0000-0.0001-0.0002.hdf5')
+model = load_model('04-0.0000-0.0000-0.0000-0.0000.hdf5')
 print('Model Loaded!')
 
 console = melee.Console(path="/Users/bchan/Library/Application Support/Slippi Launcher/netplay/Slippi Dolphin.app")
@@ -24,6 +24,7 @@ controller_human.connect()
 scaler = MinMaxScaler(feature_range=(0,1))
 sample = list()
 timestep = 48
+count = 0
 
 while True:
     gamestate = console.step()
@@ -47,7 +48,14 @@ while True:
         trans = np.array(trans)
         trans = trans.reshape((1, trans.shape[0], trans.shape[1]))
         assert trans is not None, 'trans is None'
-        print(model.predict(trans, verbose=0))
+        if count == 500:
+            print(model.predict(trans, verbose=0))
+            print(sample)
+            break
+        elif count % 100 == 0:
+            print(model.predict(trans, verbose=0))
+            print(sample)
+        count += 1
     else:
     # Selects character and stage
         melee.MenuHelper.menu_helper_simple(gamestate,

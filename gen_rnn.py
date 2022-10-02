@@ -29,7 +29,7 @@ def split_data(data, timestep):
         x2.append([x[0][2] for x in sample])
         x3.append([x[0][3] for x in sample])
     
-        y.append(data[timestep][1])
+        y.append(data[end][1])
 
     return array(x0, dtype=float), array(x1, dtype=float), array(x2, dtype=float), array(x3, dtype=float), array(y, dtype=float)
 
@@ -76,7 +76,7 @@ model.add(Dense(50, activation='relu'))
 model.add(Dense(10))
 '''
 
-model = load_model('models/54-0.0000-0.0000-0.0000-0.0001.hdf5')
+model = load_model('40-0.0000-0.0000-0.0001-0.0002.hdf5')
 
 filepath = 'models/{epoch:02d}-{loss:.4f}-{val_loss:.4f}-{mae:.4f}-{val_mae:.4f}.hdf5'
 callbacks = [EarlyStopping(monitor='val_loss', patience=20),

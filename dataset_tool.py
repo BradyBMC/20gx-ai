@@ -77,8 +77,8 @@ def convert_dataset(
             return 0
 
     # Need to change how name will be generated
-    f = open(pkl_path + '/data' + str(count) + '.pkl', 'wb')
-    # f = open('data.pkl', 'wb')
+    # f = open(pkl_path + '/data' + str(count) + '.pkl', 'wb')
+    f = open('data.pkl', 'wb')
 
     data = []
     while True:
@@ -88,7 +88,6 @@ def convert_dataset(
             break
 
         # Each frame has game data and controller data
-        #frame = {}
         frame = []
 
         # Visible game data for 1 frame
@@ -99,9 +98,6 @@ def convert_dataset(
         frame.append([agent_data[0], agent_data[1],
                       adversary_data[0], adversary_data[1]])
         
-        
-        # frame['Gamedata'] = [agent_data, adversary_data]
-
         # All controller data for 1 frame
         controller = gamestate.players[agent_port].controller_state
         
@@ -122,7 +118,6 @@ def convert_dataset(
         # inputs = [control_stick, c_stick, pressed]
         inputs = control_stick + c_stick + pressed
 
-        # frame['Controller'] = inputs
         frame.append(inputs)
 
         data.append(frame)

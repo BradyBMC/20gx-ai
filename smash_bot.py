@@ -31,7 +31,7 @@ def split_data(data, timestep):
         x2.append([x[0][2] for x in sample])
         x3.append([x[0][3] for x in sample])
     
-        y.append(data[timestep][1])
+        y.append(data[end][1])
 
     x0, x1= array(x0, dtype=float), array(x1, dtype=float)
     x2, x3 = array(x2, dtype=float), array(x3, dtype=float)
@@ -96,13 +96,13 @@ class SmashBot:
         self.model.compile(optimizer='adam', loss='mse', metrics=['mae'])
         self.model.fit(self.x, self.y, validation_split=0.2, epochs=200, callbacks=self.callbacks, batch_size=16)
         
-'''
+
 with open('data.pkl', 'rb') as f:
     data = pickle.load(f)
-obj = SmashBot(load=True)
-obj.train_model(data)
-'''
+obj = SmashBot(data, load=True)
+obj.train_model()
 
+'''
 path = 'pdata'
 directory = os.fsencode(path)
 for file in os.listdir(directory):
@@ -113,3 +113,4 @@ for file in os.listdir(directory):
             data = pickle.load(f)
         obj = SmashBot(data, load=True)
         obj.train_model()
+'''

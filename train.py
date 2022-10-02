@@ -2,11 +2,18 @@ import os
 import argparse
 import pickle
 import dataset_tool
+import smash_bot
 from threading import Thread, Lock
 from multiprocessing import Process
 
 #----------------------------------------------------------------------------
 
+'''
+Pass files and process data
+
+path: path to training data that needs to be processed
+pkl_path: path to where pkl should be saved
+'''
 def config(
     path: str, 
     pkl_path: str
@@ -92,10 +99,23 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('-data', help='Training data directory name', type=str)
 parser.add_argument('-dest', help='Pickle directory name', type=str)
+parser.add_argument('-train', help='Train model after data processed', type=bool)
 
 args = parser.parse_args()
 
 config(args.data, args.dest)
+
+if args.train:
+    path = args.dest
+    directory = os.fsencode(path)
+    for file in os.listdir(directory):
+        filename = path + '/' + os.fsdecode(file)
+        assert filename.endswith('.pkl'), 'Contains non .pkl files: ' + filename
+        print('\nTraining pkl loaded', filename,'\n')
+        with open(filename, 'rb') as f:
+            data = pickle.load(f)
+        obj = SmashBot(data, load=True)
+        obj.train_model()
 
 #----------------------------------------------------------------------------
 

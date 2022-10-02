@@ -1,2 +1,4 @@
 # 20gx-ai
-The year is 20gx. Melee has become no more than rps
+Runs specifically on pip install melee==0.36.0
+
+python3 train.py -data training_set0001 -dest pdata -train False
